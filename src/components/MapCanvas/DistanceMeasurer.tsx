@@ -43,8 +43,8 @@ export const DistanceMeasurer: React.FC = () => {
         e.stopPropagation();
         if (!measureStart) {
             const rect = e.currentTarget.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / width;
-            const y = (e.clientY - rect.top) / height;
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
             setMeasureStart({ x, y });
         } else {
             setMeasureStart(null);
