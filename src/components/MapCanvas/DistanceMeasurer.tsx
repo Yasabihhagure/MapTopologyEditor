@@ -42,9 +42,8 @@ export const DistanceMeasurer: React.FC = () => {
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!measureStart) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const y = (e.clientY - rect.top) / rect.height;
+            const x = e.nativeEvent.offsetX / width;
+            const y = e.nativeEvent.offsetY / height;
             setMeasureStart({ x, y });
         } else {
             setMeasureStart(null);
