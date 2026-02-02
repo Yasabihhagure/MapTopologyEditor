@@ -126,19 +126,17 @@ function App() {
         toolbar={Toolbar}
         statusbar={StatusCode}
         canvas={
-          canvas = {
-          < div className="relative w-full h-full">
-        <MapCanvas>
-          <TopologyLayer />
-          <DistanceMeasurer />
-        </MapCanvas>
-        <div className="absolute top-4 right-4 z-10">
-          <ZoomControls />
-        </div>
-      </div>
+          <div className="relative w-full h-full">
+            <MapCanvas>
+              <TopologyLayer />
+              <DistanceMeasurer />
+            </MapCanvas>
+            <div className="absolute top-4 right-4 z-10">
+              <ZoomControls />
+            </div>
+          </div>
         }
-        }
-      rightSidebar={<NodeList />}
+        rightSidebar={<NodeList />}
       />
 
       {interactionMode !== 'idle' && (
