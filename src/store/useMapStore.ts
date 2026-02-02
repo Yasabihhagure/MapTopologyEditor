@@ -21,8 +21,8 @@ interface MapState extends ProjectData {
     loadProject: (data: ProjectData) => void;
 
     // Editor State
-    mode: 'view' | 'edit' | 'measure';
-    setMode: (mode: 'view' | 'edit' | 'measure') => void;
+    mode: 'view' | 'edit' | 'measure' | 'pan';
+    setMode: (mode: 'view' | 'edit' | 'measure' | 'pan') => void;
     selectedElement: { type: 'node' | 'way', id: string } | null;
     selectElement: (type: 'node' | 'way' | null, id?: string) => void;
 
@@ -131,7 +131,7 @@ export const useMapStore = create<MapState>((set) => ({
         ways: data.ways
     }),
 
-    setMode: (mode: 'view' | 'edit' | 'measure') => set({ mode }),
+    setMode: (mode: 'view' | 'edit' | 'measure' | 'pan') => set({ mode }),
 
     selectElement: (type: 'node' | 'way' | null, id?: string) => set({
         selectedElement: type && id ? { type, id } : null

@@ -12,6 +12,7 @@ import { DistanceMeasurer } from './components/MapCanvas/DistanceMeasurer'
 import { useMapStore } from './store/useMapStore'
 import { Download, Type } from 'lucide-react'
 import { Button } from './components/ui/button'
+import { ZoomControls } from './components/MapCanvas/ZoomControls'
 
 function App() {
   const { project, selectedElement, nodes, ways, interactionMode, removeNode, removeWay, selectElement, showWayNames, setShowWayNames, measureDistance } = useMapStore()
@@ -125,12 +126,19 @@ function App() {
         toolbar={Toolbar}
         statusbar={StatusCode}
         canvas={
-          <MapCanvas>
-            <TopologyLayer />
-            <DistanceMeasurer />
-          </MapCanvas>
+          canvas = {
+          < div className="relative w-full h-full">
+        <MapCanvas>
+          <TopologyLayer />
+          <DistanceMeasurer />
+        </MapCanvas>
+        <div className="absolute top-4 right-4 z-10">
+          <ZoomControls />
+        </div>
+      </div>
         }
-        rightSidebar={<NodeList />}
+        }
+      rightSidebar={<NodeList />}
       />
 
       {interactionMode !== 'idle' && (

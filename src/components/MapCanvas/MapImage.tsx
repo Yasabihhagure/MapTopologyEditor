@@ -12,7 +12,7 @@ interface DragState {
 }
 
 export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-    const { project, updateViewBox, setMapImage, loadProject } = useMapStore();
+    const { project, updateViewBox, setMapImage, loadProject, mode } = useMapStore();
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Drag state for panning
@@ -32,7 +32,10 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+        // Pan condition: Middle click, Shift+Left click, or 'pan' mode with Left click
+        const isPanAction = e.button === 1 || (e.button === 0 && e.shiftKey) || (mode === 'pan' && e.button === 0);
+
+        if (isPanAction) {
             setDrag({
                 isDragging: true,
                 startX: e.clientX,
