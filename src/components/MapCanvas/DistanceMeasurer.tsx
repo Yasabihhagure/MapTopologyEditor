@@ -64,7 +64,7 @@ export const DistanceMeasurer: React.FC = () => {
 
     return (
         <div
-            className="absolute inset-0 z-50 cursor-crosshair"
+            className="absolute inset-0 z-50 cursor-crosshair pointer-events-auto"
             onMouseMove={handleMouseMove}
             onClick={handleClick}
         >
