@@ -110,7 +110,15 @@ function App() {
     <div className="flex gap-4">
       <span>Nodes: {nodes.length}</span>
       <span>Ways: {ways.length}</span>
-      <span>Scale: {project.scale ? `${project.scale.unit}/px` : '未設定'}</span>
+      <span>Scale: {project.scale ? (() => {
+        const { p1, p2, actualDistance, unit } = project.scale;
+        const { width, height } = project.mapImageSize!;
+        const dx = (p2.x - p1.x) * width;
+        const dy = (p2.y - p1.y) * height;
+        const pixelDistance = Math.sqrt(dx * dx + dy * dy);
+        const distPerPixel = actualDistance / pixelDistance;
+        return `${distPerPixel.toFixed(4)} ${unit}/px`;
+      })() : '未設定'}</span>
       {measureDistance !== null && (
         <span className="font-bold text-red-500">
           計測: {project.scale ? `${measureDistance.toFixed(2)} ${project.scale.unit}` : `${Math.round(measureDistance)} px`}
