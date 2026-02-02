@@ -15,9 +15,8 @@ export const DistanceMeasurer: React.FC = () => {
     const { width, height } = project.mapImageSize;
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / width;
-        const y = (e.clientY - rect.top) / height;
+        const x = e.nativeEvent.offsetX / width;
+        const y = e.nativeEvent.offsetY / height;
         setCursorPos({ x, y });
 
         if (measureStart) {
