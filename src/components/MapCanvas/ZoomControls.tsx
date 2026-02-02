@@ -9,16 +9,37 @@ export const ZoomControls: React.FC = () => {
     if (!showZoomControls) return null;
 
     const handleZoom = (direction: 'in' | 'out') => {
-        const currentZoom = project.viewBox.zoom;
+        const { zoom, panX, panY } = project.viewBox;
         const zoomFactor = 1.2;
-        let newZoom = direction === 'in' ? currentZoom * zoomFactor : currentZoom / zoomFactor;
+        let newZoom = direction === 'in' ? zoom * zoomFactor : zoom / zoomFactor;
 
         // Clamp zoom level
         newZoom = Math.max(0.1, Math.min(10, newZoom));
 
-        // Note: This button-based zoom centers on the view (handled by simple zoom update),
-        // unlike scroll zoom which we updated to center on cursor. This is expected behavior for buttons.
-        updateViewBox({ zoom: newZoom });
+        // Calculate center based zoom
+        const container = document.getElementById('map-capture-target');
+        if (container) {
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            // Current image projection at center
+            // centerX = (imgX * zoom) + panX
+            // => imgX = (centerX - panX) / zoom
+            const imgX = (centerX - panX) / zoom;
+            const imgY = (centerY - panY) / zoom;
+
+            // Calculate new pan to keep imgX, imgY at center
+            // centerX = (imgX * newZoom) + newPanX
+            // => newPanX = centerX - (imgX * newZoom)
+            const newPanX = centerX - (imgX * newZoom);
+            const newPanY = centerY - (imgY * newZoom);
+
+            updateViewBox({ zoom: newZoom, panX: newPanX, panY: newPanY });
+        } else {
+            // Fallback if container not found (old behavior)
+            updateViewBox({ zoom: newZoom });
+        }
     };
 
     return (
