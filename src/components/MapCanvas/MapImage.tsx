@@ -112,11 +112,11 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8 border-2 border-dashed m-8 rounded-lg">
                 <h2 className="text-2xl font-bold mb-4">地図画像がありません</h2>
                 <div className="flex gap-4">
-                    <label className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md">
+                    <label className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium shadow-sm">
                         画像アップロード
                         <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                     </label>
-                    <label className="cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md">
+                    <label className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium shadow-sm">
                         JSON読込
                         <input type="file" accept=".json" className="hidden" onChange={handleJsonUpload} />
                     </label>
