@@ -26,9 +26,31 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
 
     const handleWheel = (e: React.WheelEvent) => {
         e.preventDefault();
+
+        // Calculate normalized position of the mouse relative to the image
+        // We use the current viewBox to determine where the mouse is in "image space"
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (!rect) return;
+
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Current image projection
+        // x_screen = (x_img * zoom) + panX
+        // => x_img = (x_screen - panX) / zoom
+        const imgX = (mouseX - project.viewBox.panX) / project.viewBox.zoom;
+        const imgY = (mouseY - project.viewBox.panY) / project.viewBox.zoom;
+
         const zoomSensitivity = 0.001;
         const newZoom = Math.max(0.1, Math.min(10, project.viewBox.zoom - e.deltaY * zoomSensitivity));
-        updateViewBox({ zoom: newZoom });
+
+        // We want the point (imgX, imgY) to remain at (mouseX, mouseY) after zoom
+        // mouseX = (imgX * newZoom) + newPanX
+        // => newPanX = mouseX - (imgX * newZoom)
+        const newPanX = mouseX - (imgX * newZoom);
+        const newPanY = mouseY - (imgY * newZoom);
+
+        updateViewBox({ zoom: newZoom, panX: newPanX, panY: newPanY });
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {

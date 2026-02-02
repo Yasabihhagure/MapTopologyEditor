@@ -7,7 +7,8 @@ export const TopologyLayer: React.FC = () => {
         project, nodes, ways,
         mode, selectedElement, selectElement,
         addNode, addWay,
-        interactionMode, setInteractionMode, setTempScalePoint
+        interactionMode, setInteractionMode, setTempScalePoint,
+        showNodes, showWays // Added visibility flags
     } = useMapStore();
 
     // Only used for adding nodes relative to image
@@ -75,7 +76,7 @@ export const TopologyLayer: React.FC = () => {
                 className="overflow-visible"
             >
                 {/* Ways (Lines) */}
-                {ways.map((way: MapWay) => {
+                {showWays && ways.map((way: MapWay) => {
                     if (!way.visible) return null;
                     // Find coordinate path
                     const pathCoords = way.nodes.map((nid: string) => {
@@ -103,7 +104,7 @@ export const TopologyLayer: React.FC = () => {
 
                 {/* Way Names */}
                 {/* Added for Beta 2: Show Way Names */}
-                {useMapStore.getState().showWayNames && ways.map((way: MapWay) => {
+                {useMapStore.getState().showWayNames && showWays && ways.map((way: MapWay) => {
                     if (!way.visible || !way.tags?.name) return null;
 
                     const pathCoords = way.nodes.map((nid: string) => {
@@ -158,7 +159,7 @@ export const TopologyLayer: React.FC = () => {
                 })}
 
                 {/* Nodes (Circles) */}
-                {nodes.map((node: MapNode) => {
+                {showNodes && nodes.map((node: MapNode) => {
                     if (!node.visible) return null;
                     const isSelected = selectedElement?.id === node.id;
 

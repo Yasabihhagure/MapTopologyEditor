@@ -4,7 +4,9 @@ import { Button } from '../ui/button';
 import { Plus, Minus } from 'lucide-react';
 
 export const ZoomControls: React.FC = () => {
-    const { project, updateViewBox } = useMapStore();
+    const { project, updateViewBox, showZoomControls } = useMapStore();
+
+    if (!showZoomControls) return null;
 
     const handleZoom = (direction: 'in' | 'out') => {
         const currentZoom = project.viewBox.zoom;
@@ -14,6 +16,8 @@ export const ZoomControls: React.FC = () => {
         // Clamp zoom level
         newZoom = Math.max(0.1, Math.min(10, newZoom));
 
+        // Note: This button-based zoom centers on the view (handled by simple zoom update),
+        // unlike scroll zoom which we updated to center on cursor. This is expected behavior for buttons.
         updateViewBox({ zoom: newZoom });
     };
 

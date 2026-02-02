@@ -41,6 +41,14 @@ interface MapState extends ProjectData {
     setMeasureStart: (point: { x: number, y: number } | null) => void;
     measureDistance: number | null;
     setMeasureDistance: (dist: number | null) => void;
+
+    // Visibility States
+    showNodes: boolean;
+    setShowNodes: (show: boolean) => void;
+    showWays: boolean;
+    setShowWays: (show: boolean) => void;
+    showZoomControls: boolean;
+    setShowZoomControls: (show: boolean) => void;
 }
 
 export const useMapStore = create<MapState>((set) => ({
@@ -64,6 +72,14 @@ export const useMapStore = create<MapState>((set) => ({
     setMeasureStart: (point) => set({ measureStart: point }),
     measureDistance: null,
     setMeasureDistance: (dist) => set({ measureDistance: dist }),
+
+    showNodes: true,
+    setShowNodes: (show) => set({ showNodes: show }),
+    showWays: true,
+    setShowWays: (show) => set({ showWays: show }),
+    showZoomControls: true,
+    setShowZoomControls: (show) => set({ showZoomControls: show }),
+
 
 
     setMapImage: (url: string, width: number, height: number) => set((state) => ({
