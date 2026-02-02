@@ -2,10 +2,27 @@ import React from 'react';
 import { useMapStore } from '../../store/useMapStore';
 import { ScrollArea } from '../ui/scroll-area';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import type { MapNode } from '../../types/schema';
 
 export const NodeList: React.FC = () => {
     const { nodes, selectedElement, selectElement, project, updateViewBox } = useMapStore();
+    const [filterType, setFilterType] = React.useState<'name' | 'place'>('name');
+    const [filterText, setFilterText] = React.useState('');
+
+    const filteredNodes = nodes.filter((node: MapNode) => {
+        if (!filterText) return true;
+        const lowerFilter = filterText.toLowerCase();
+
+        if (filterType === 'place') {
+            return node.tags.place?.toLowerCase().includes(lowerFilter);
+        } else {
+            // Name filter checks both jp and en names
+            return (node.tags.name?.toLowerCase().includes(lowerFilter) ||
+                node.tags['name:en']?.toLowerCase().includes(lowerFilter));
+        }
+    });
 
     const handleNodeClick = (id: string) => {
         selectElement('node', id);
@@ -42,11 +59,31 @@ export const NodeList: React.FC = () => {
     return (
         <div className="flex flex-col h-full">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-                ノード一覧 ({nodes.length})
+                ノード一覧 ({filteredNodes.length} / {nodes.length})
             </h3>
+
+            {/* Filter Controls */}
+            <div className="flex gap-1 mb-2 px-1">
+                <Select value={filterType} onValueChange={(v: 'name' | 'place') => setFilterType(v)}>
+                    <SelectTrigger className="w-[80px] h-8 text-xs">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="name">名称</SelectItem>
+                        <SelectItem value="place">種類</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Input
+                    placeholder="検索..."
+                    className="h-8 text-xs flex-1"
+                    value={filterText}
+                    onChange={(e) => setFilterText(e.target.value)}
+                />
+            </div>
+
             <ScrollArea className="flex-1 pr-2">
                 <div className="space-y-1">
-                    {nodes.map((node: MapNode) => {
+                    {filteredNodes.map((node: MapNode) => {
                         const isSelected = selectedElement?.id === node.id && selectedElement.type === 'node';
                         const displayName = node.tags.name || node.tags['name:en'] || `Node ${node.id.slice(0, 4)}`;
 
@@ -63,7 +100,7 @@ export const NodeList: React.FC = () => {
                             </Button>
                         );
                     })}
-                    {nodes.length === 0 && (
+                    {filteredNodes.length === 0 && (
                         <div className="text-xs text-muted-foreground p-2 text-center">
                             ノードがありません
                         </div>

@@ -21,8 +21,8 @@ interface MapState extends ProjectData {
     loadProject: (data: ProjectData) => void;
 
     // Editor State
-    mode: 'view' | 'edit';
-    setMode: (mode: 'view' | 'edit') => void;
+    mode: 'view' | 'edit' | 'measure';
+    setMode: (mode: 'view' | 'edit' | 'measure') => void;
     selectedElement: { type: 'node' | 'way', id: string } | null;
     selectElement: (type: 'node' | 'way' | null, id?: string) => void;
 
@@ -31,6 +31,16 @@ interface MapState extends ProjectData {
     setInteractionMode: (mode: 'idle' | 'scale_p1' | 'scale_p2') => void;
     tempScalePoints: { p1: { x: number, y: number } | null, p2: { x: number, y: number } | null };
     setTempScalePoint: (point: 'p1' | 'p2', x: number, y: number) => void;
+
+    // View Options
+    showWayNames: boolean;
+    setShowWayNames: (show: boolean) => void;
+
+    // Measure State
+    measureStart: { x: number, y: number } | null;
+    setMeasureStart: (point: { x: number, y: number } | null) => void;
+    measureDistance: number | null;
+    setMeasureDistance: (dist: number | null) => void;
 }
 
 export const useMapStore = create<MapState>((set) => ({
@@ -46,6 +56,14 @@ export const useMapStore = create<MapState>((set) => ({
 
     interactionMode: 'idle',
     tempScalePoints: { p1: null, p2: null },
+
+    showWayNames: false,
+    setShowWayNames: (show) => set({ showWayNames: show }),
+
+    measureStart: null,
+    setMeasureStart: (point) => set({ measureStart: point }),
+    measureDistance: null,
+    setMeasureDistance: (dist) => set({ measureDistance: dist }),
 
 
     setMapImage: (url: string, width: number, height: number) => set((state) => ({
@@ -113,7 +131,7 @@ export const useMapStore = create<MapState>((set) => ({
         ways: data.ways
     }),
 
-    setMode: (mode: 'view' | 'edit') => set({ mode }),
+    setMode: (mode: 'view' | 'edit' | 'measure') => set({ mode }),
 
     selectElement: (type: 'node' | 'way' | null, id?: string) => set({
         selectedElement: type && id ? { type, id } : null

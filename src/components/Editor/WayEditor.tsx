@@ -68,7 +68,19 @@ export const WayEditor: React.FC = () => {
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="highway">種類 (Highway)</Label>
-                    <Input id="highway" name="highway" placeholder="footway, path..." value={formData.highway} onChange={handleChange} />
+                    <Input
+                        id="highway"
+                        name="highway"
+                        placeholder="footway, path..."
+                        value={formData.highway}
+                        onChange={handleChange}
+                        list="highway-options"
+                    />
+                    <datalist id="highway-options">
+                        {Array.from(new Set(ways.map(w => w.tags.highway).filter(Boolean))).sort().map(hw => (
+                            <option key={hw} value={hw} />
+                        ))}
+                    </datalist>
                 </div>
 
                 <div className="flex gap-2 justify-end pt-2">

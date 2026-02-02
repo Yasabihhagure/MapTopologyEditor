@@ -17,7 +17,7 @@ export const ScaleSetting: React.FC = () => {
         p1: { x: 0, y: 0 },
         p2: { x: 1, y: 0 }, // Default to full width
         actualDistance: 100,
-        unit: 'm'
+        unit: 'km'
     });
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export const ScaleSetting: React.FC = () => {
             p1: { x: 0, y: 0 },
             p2: { x: 1, y: 0 },
             actualDistance: 100,
-            unit: 'm'
+            unit: 'km'
         };
 
         // If we have temp points from interaction, override

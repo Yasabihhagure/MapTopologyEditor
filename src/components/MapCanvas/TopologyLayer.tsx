@@ -101,6 +101,62 @@ export const TopologyLayer: React.FC = () => {
                     );
                 })}
 
+                {/* Way Names */}
+                {/* Added for Beta 2: Show Way Names */}
+                {useMapStore.getState().showWayNames && ways.map((way: MapWay) => {
+                    if (!way.visible || !way.tags?.name) return null;
+
+                    const pathCoords = way.nodes.map((nid: string) => {
+                        const n = nodes.find((node: MapNode) => node.id === nid);
+                        return n ? { x: n.x * width, y: n.y * height } : null;
+                    }).filter(Boolean) as { x: number, y: number }[];
+
+                    if (pathCoords.length < 2) return null;
+
+                    // Calculate total length and segments
+                    let totalLength = 0;
+                    const segments = [];
+                    for (let i = 0; i < pathCoords.length - 1; i++) {
+                        const p1 = pathCoords[i];
+                        const p2 = pathCoords[i + 1];
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const len = Math.sqrt(dx * dx + dy * dy);
+                        segments.push({ p1, p2, len, startDist: totalLength });
+                        totalLength += len;
+                    }
+
+                    // Find midpoint
+                    const targetDist = totalLength / 2;
+                    let midPoint = pathCoords[0];
+
+                    for (const seg of segments) {
+                        if (targetDist >= seg.startDist && targetDist <= seg.startDist + seg.len) {
+                            const remaining = targetDist - seg.startDist;
+                            const ratio = remaining / seg.len;
+                            midPoint = {
+                                x: seg.p1.x + (seg.p2.x - seg.p1.x) * ratio,
+                                y: seg.p1.y + (seg.p2.y - seg.p1.y) * ratio
+                            };
+                            break;
+                        }
+                    }
+
+                    return (
+                        <text
+                            key={`text-${way.id}`}
+                            x={midPoint.x}
+                            y={midPoint.y}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            className="pointer-events-none select-none text-xs font-bold fill-slate-700 stroke-white stroke-2 paint-order-stroke"
+                            style={{ paintOrder: 'stroke' }}
+                        >
+                            {way.tags.name}
+                        </text>
+                    );
+                })}
+
                 {/* Nodes (Circles) */}
                 {nodes.map((node: MapNode) => {
                     if (!node.visible) return null;

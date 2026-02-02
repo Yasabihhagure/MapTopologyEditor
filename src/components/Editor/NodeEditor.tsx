@@ -74,7 +74,19 @@ export const NodeEditor: React.FC = () => {
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="place">種類 (Place)</Label>
-                    <Input id="place" name="place" placeholder="town, village..." value={formData.place} onChange={handleChange} />
+                    <Input
+                        id="place"
+                        name="place"
+                        placeholder="town, village..."
+                        value={formData.place}
+                        onChange={handleChange}
+                        list="place-options"
+                    />
+                    <datalist id="place-options">
+                        {Array.from(new Set(nodes.map(n => n.tags.place).filter(Boolean))).sort().map(place => (
+                            <option key={place} value={place} />
+                        ))}
+                    </datalist>
                 </div>
                 <div className="flex gap-2 justify-end pt-2">
                     <Button variant="destructive" size="sm" onClick={handleDelete}>削除</Button>

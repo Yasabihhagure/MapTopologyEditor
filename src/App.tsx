@@ -8,12 +8,13 @@ import { NodeEditor } from './components/Editor/NodeEditor'
 
 import { WayEditor } from './components/Editor/WayEditor'
 import { ScaleSetting } from './components/Editor/ScaleSetting'
+import { DistanceMeasurer } from './components/MapCanvas/DistanceMeasurer'
 import { useMapStore } from './store/useMapStore'
-import { Download } from 'lucide-react'
+import { Download, Type } from 'lucide-react'
 import { Button } from './components/ui/button'
 
 function App() {
-  const { project, selectedElement, nodes, ways, interactionMode, removeNode, removeWay, selectElement } = useMapStore()
+  const { project, selectedElement, nodes, ways, interactionMode, removeNode, removeWay, selectElement, showWayNames, setShowWayNames, measureDistance } = useMapStore()
 
   // Global Key Handler
   useEffect(() => {
@@ -59,14 +60,24 @@ function App() {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-bold">地図画像トポロジーエディタ</h1>
-        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: β1</span>
+        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: β2</span>
       </div>
       <div className="flex gap-2">
         {project.mapImage && (
-          <Button variant="outline" size="sm" onClick={handleDownload}>
-            <Download className="w-4 h-4 mr-2" />
-            JSON出力
-          </Button>
+          <>
+            <Button
+              variant={showWayNames ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowWayNames(!showWayNames)}
+              title="リンク名を表示/非表示"
+            >
+              <Type className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleDownload}>
+              <Download className="w-4 h-4 mr-2" />
+              JSON出力
+            </Button>
+          </>
         )}
       </div>
     </div>
@@ -99,6 +110,11 @@ function App() {
       <span>Nodes: {nodes.length}</span>
       <span>Ways: {ways.length}</span>
       <span>Scale: {project.scale ? `${project.scale.actualDistance} ${project.scale.unit}` : '未設定'}</span>
+      {measureDistance !== null && (
+        <span className="font-bold text-red-500">
+          計測: {project.scale ? `${measureDistance.toFixed(2)} ${project.scale.unit}` : `${Math.round(measureDistance)} px`}
+        </span>
+      )}
     </div>
   )
 
@@ -111,6 +127,7 @@ function App() {
         canvas={
           <MapCanvas>
             <TopologyLayer />
+            <DistanceMeasurer />
           </MapCanvas>
         }
         rightSidebar={<NodeList />}

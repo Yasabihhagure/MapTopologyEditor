@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMapStore } from '../../store/useMapStore';
 import { Button } from '../ui/button';
-import { MousePointer2, Eye } from 'lucide-react';
+import { MousePointer2, Eye, Ruler } from 'lucide-react';
 
 export const ModeSwitcher: React.FC = () => {
     const { mode, setMode } = useMapStore();
@@ -15,7 +15,7 @@ export const ModeSwitcher: React.FC = () => {
                 onClick={() => setMode('view')}
             >
                 <Eye className="w-4 h-4 mr-2" />
-                閲覧 (View)
+                閲覧
             </Button>
             <Button
                 variant={mode === 'edit' ? 'default' : 'ghost'}
@@ -24,7 +24,16 @@ export const ModeSwitcher: React.FC = () => {
                 onClick={() => setMode('edit')}
             >
                 <MousePointer2 className="w-4 h-4 mr-2" />
-                編集 (Edit)
+                編集
+            </Button>
+            <Button
+                variant={mode === 'measure' ? 'default' : 'ghost'}
+                size="sm"
+                className="flex-1"
+                onClick={() => setMode('measure')}
+            >
+                <Ruler className="w-4 h-4 mr-2" />
+                計測
             </Button>
         </div>
     );
