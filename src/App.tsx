@@ -110,7 +110,7 @@ function App() {
     <div className="flex gap-4">
       <span>Nodes: {nodes.length}</span>
       <span>Ways: {ways.length}</span>
-      <span>Scale: {project.scale ? `${project.scale.actualDistance} ${project.scale.unit}` : '未設定'}</span>
+      <span>Scale: {project.scale ? `${project.scale.unit}/px` : '未設定'}</span>
       {measureDistance !== null && (
         <span className="font-bold text-red-500">
           計測: {project.scale ? `${measureDistance.toFixed(2)} ${project.scale.unit}` : `${Math.round(measureDistance)} px`}
