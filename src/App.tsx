@@ -120,7 +120,7 @@ function App() {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-bold">地図画像トポロジーエディタ</h1>
-        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: β3</span>
+        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: v1.0.0</span>
       </div>
       <div className="flex gap-2">
         {project.mapImage && (
