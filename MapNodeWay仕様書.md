@@ -31,7 +31,8 @@
       "p1": { "x": 0.1, "y": 0.1 }, 
       "p2": { "x": 0.2, "y": 0.1 },
       "actualDistance": 100,
-      "unit": "km"
+      "unit": "km",
+      "scale_px_per_unit": 12.3456
     }
   },
   "nodes": [

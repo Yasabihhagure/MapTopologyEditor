@@ -52,7 +52,20 @@ function App() {
 
   const handleDownload = () => {
     const data = {
-      project: project,
+      project: {
+        ...project,
+        scale: project.scale ? {
+          ...project.scale,
+          scale_px_per_unit: (() => {
+            const { p1, p2, actualDistance } = project.scale;
+            const { width, height } = project.mapImageSize!;
+            const dx = (p2.x - p1.x) * width;
+            const dy = (p2.y - p1.y) * height;
+            const pixelDistance = Math.sqrt(dx * dx + dy * dy);
+            return pixelDistance / actualDistance;
+          })()
+        } : null
+      },
       nodes: nodes,
       ways: ways
     }
@@ -120,7 +133,7 @@ function App() {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-bold">地図画像トポロジーエディタ</h1>
-        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: v1.0.0</span>
+        <span className="text-xs font-mono bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded">Ver: v1.0.1</span>
       </div>
       <div className="flex gap-2">
         {project.mapImage && (
@@ -198,8 +211,8 @@ function App() {
         const dx = (p2.x - p1.x) * width;
         const dy = (p2.y - p1.y) * height;
         const pixelDistance = Math.sqrt(dx * dx + dy * dy);
-        const distPerPixel = actualDistance / pixelDistance;
-        return `${distPerPixel.toFixed(4)} ${unit}/px`;
+        const pxPerUnit = pixelDistance / actualDistance;
+        return `${pxPerUnit.toFixed(2)} px/${unit}`;
       })() : '未設定'}</span>
       {measureDistance !== null && (
         <span className="font-bold text-red-500">

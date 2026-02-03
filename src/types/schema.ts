@@ -10,6 +10,7 @@ export interface ScaleConfig {
     p2: ScalePoint;
     actualDistance: number;
     unit: Unit;
+    scale_px_per_unit?: number;
 }
 
 export interface ViewBox {
