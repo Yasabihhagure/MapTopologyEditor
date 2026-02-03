@@ -25,7 +25,7 @@
 ```
 {
   "project": {
-    "mapImage": "url_to_image.jpg",
+    "mapImage": "map.png",
     "viewBox": { "zoom": 1, "panX": 0, "panY": 0 },
     "scale": {
       "p1": { "x": 0.1, "y": 0.1 }, 

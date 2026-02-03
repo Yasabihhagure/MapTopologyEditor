@@ -93,6 +93,9 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
                 const img = new Image();
                 img.onload = () => {
                     setMapImage(url, img.width, img.height);
+                    // Also set the filename in store
+                    const { setMapImageName } = useMapStore.getState();
+                    setMapImageName(file.name);
                 }
                 img.src = url;
             };
@@ -100,21 +103,63 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
         }
     };
 
-    // JSON Upload Handler
-    const handleJsonUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (loadEvent) => {
-                try {
-                    const json = JSON.parse(loadEvent.target?.result as string) as ProjectData;
-                    loadProject(json);
-                } catch (err) {
-                    console.error("Failed to parse JSON", err);
-                    alert("プロジェクトファイルの読み込みに失敗しました。");
+    // Project Upload Handler (JSON + Image)
+    const handleProjectUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+
+        // Find JSON file
+        const jsonFile = files.find(f => f.name.endsWith('.json'));
+        if (!jsonFile) {
+            alert("JSONファイルが見つかりません。");
+            return;
+        }
+
+        try {
+            const jsonText = await jsonFile.text();
+            const projectData = JSON.parse(jsonText) as ProjectData;
+
+            // 1. Load project data (nodes, ways, settings)
+            loadProject(projectData);
+
+            // 2. Handle Map Image
+            const mapImageName = projectData.project.mapImage;
+
+            if (mapImageName) {
+                // Case A: mapImage is a Data URL (Legacy support or embedded)
+                if (mapImageName.startsWith('data:')) {
+                    const img = new Image();
+                    img.onload = () => {
+                        setMapImage(mapImageName, img.width, img.height);
+                        // For legacy data, we might not have a filename, or we can leave it null
+                        useMapStore.getState().setMapImageName(null);
+                    }
+                    img.src = mapImageName;
                 }
-            };
-            reader.readAsText(file);
+                // Case B: mapImage is a filename
+                else {
+                    const imageFile = files.find(f => f.name === mapImageName);
+                    if (imageFile) {
+                        const reader = new FileReader();
+                        reader.onload = (loadEvent) => {
+                            const url = loadEvent.target?.result as string;
+                            const img = new Image();
+                            img.onload = () => {
+                                setMapImage(url, img.width, img.height);
+                                useMapStore.getState().setMapImageName(mapImageName);
+                            }
+                            img.src = url;
+                        };
+                        reader.readAsDataURL(imageFile);
+                    } else {
+                        // Image file missing in the selection
+                        alert(`プロジェクトに含まれる地図画像 (${mapImageName}) が選択されていません。\nJSONファイルと画像ファイルを同時に選択してください。`);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Failed to parse JSON", err);
+            alert("プロジェクトファイルの読み込みに失敗しました。");
         }
     }
 
@@ -132,17 +177,21 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
     if (!project.mapImage) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8 border-2 border-dashed m-8 rounded-lg">
-                <h2 className="text-2xl font-bold mb-4">地図画像がありません</h2>
+                <h2 className="text-2xl font-bold mb-4">プロジェクトを開く</h2>
                 <div className="flex gap-4">
                     <label className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium shadow-sm">
-                        画像アップロード
+                        画像のみ開く
                         <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                     </label>
-                    <label className="cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-3 rounded-md font-medium shadow-sm">
-                        JSON読込
-                        <input type="file" accept=".json" className="hidden" onChange={handleJsonUpload} />
+                    <label className="cursor-pointer bg-secondary text-secondary-foreground hover:bg-secondary/90 px-6 py-3 rounded-md font-medium shadow-sm">
+                        プロジェクト読込 (JSON+画像)
+                        <input type="file" accept=".json,image/*" multiple className="hidden" onChange={handleProjectUpload} />
                     </label>
                 </div>
+                <p className="mt-4 text-sm text-muted-foreground">
+                    ※ 保存済みプロジェクトを開く際は、JSONファイルと画像ファイルを<br />
+                    <strong>同時に選択</strong>してアップロードしてください。
+                </p>
             </div>
         );
     }

@@ -7,6 +7,8 @@ const generateId = () => uuidv4();
 interface MapState extends ProjectData {
     // Actions
     setMapImage: (url: string, width: number, height: number) => void;
+    mapImageName: string | null;
+    setMapImageName: (name: string | null) => void;
     updateViewBox: (viewBox: Partial<ViewBox>) => void;
     setScale: (scale: ScaleConfig) => void;
 
@@ -57,6 +59,8 @@ export const useMapStore = create<MapState>((set) => ({
         viewBox: { zoom: 1, panX: 0, panY: 0 },
         scale: null,
     },
+    mapImageName: null,
+    setMapImageName: (name) => set({ mapImageName: name }),
     nodes: [],
     ways: [],
     mode: 'view',
