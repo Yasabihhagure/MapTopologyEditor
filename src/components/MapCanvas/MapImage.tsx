@@ -138,7 +138,22 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
                 }
                 // Case B: mapImage is a filename
                 else {
-                    const imageFile = files.find(f => f.name === mapImageName);
+                    let imageFile = files.find(f => f.name === mapImageName);
+
+                    // Fallback logic for mismatched filename
+                    if (!imageFile) {
+                        const imageFiles = files.filter(f => f.type.startsWith('image/'));
+                        if (imageFiles.length === 1) {
+                            const candidate = imageFiles[0];
+                            if (confirm(`JSONで指定された画像ファイル (${mapImageName}) が見つかりません。\n代わりに選択された画像 (${candidate.name}) を使用しますか？`)) {
+                                imageFile = candidate;
+                            } else {
+                                // User cancelled
+                                return;
+                            }
+                        }
+                    }
+
                     if (imageFile) {
                         const reader = new FileReader();
                         reader.onload = (loadEvent) => {
@@ -146,13 +161,14 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
                             const img = new Image();
                             img.onload = () => {
                                 setMapImage(url, img.width, img.height);
-                                useMapStore.getState().setMapImageName(mapImageName);
+                                // Update stored filename to the ACTUALLY used filename
+                                useMapStore.getState().setMapImageName(imageFile!.name);
                             }
                             img.src = url;
                         };
                         reader.readAsDataURL(imageFile);
                     } else {
-                        // Image file missing in the selection
+                        // Image file missing in the selection and no fallback candidate approved
                         alert(`プロジェクトに含まれる地図画像 (${mapImageName}) が選択されていません。\nJSONファイルと画像ファイルを同時に選択してください。`);
                     }
                 }
