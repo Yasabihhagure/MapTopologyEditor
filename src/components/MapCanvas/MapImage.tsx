@@ -172,6 +172,26 @@ export const MapCanvas: React.FC<{ children?: React.ReactNode }> = ({ children }
                         alert(`プロジェクトに含まれる地図画像 (${mapImageName}) が選択されていません。\nJSONファイルと画像ファイルを同時に選択してください。`);
                     }
                 }
+            } else {
+                // Case C: mapImage is empty or null in JSON
+                // Check if user provided an image anyway
+                const imageFiles = files.filter(f => f.type.startsWith('image/'));
+                if (imageFiles.length === 1) {
+                    const candidate = imageFiles[0];
+                    if (confirm(`JSONに画像ファイル名が指定されていません。\n代わりに選択された画像 (${candidate.name}) を使用しますか？`)) {
+                        const reader = new FileReader();
+                        reader.onload = (loadEvent) => {
+                            const url = loadEvent.target?.result as string;
+                            const img = new Image();
+                            img.onload = () => {
+                                setMapImage(url, img.width, img.height);
+                                useMapStore.getState().setMapImageName(candidate.name);
+                            }
+                            img.src = url;
+                        };
+                        reader.readAsDataURL(candidate);
+                    }
+                }
             }
         } catch (err) {
             console.error("Failed to parse JSON", err);
